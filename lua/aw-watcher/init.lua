@@ -1,10 +1,9 @@
-local json = require("extern.json")
 local utils = require("aw-watcher.utils")
 local uv = vim.loop
 
 Connected = false
 ErrorMSGLast = 0
-LastHeartbeat = 0
+HeartbeatLast = utils.get_time()
 File = ''
 Language = ''
 Project = ''
@@ -24,7 +23,8 @@ local function HTTPPost(url, data)
     return
   end
 
-  local payload = json.stringify(data):sub(1, -1):gsub("%s+", "") -- trim extra " and remove whitespace
+  local payload = vim.fn.json_encode(data)
+
   local args = {
     '--location',
     '--request',
@@ -69,29 +69,27 @@ local function heartbeat()
     return
   end
 
-  if not now or not LastHeartbeat or now - LastHeartbeat < 5 then
+  if not now or not HeartbeatLast or now - HeartbeatLast < 5 then
     return
   end
 
   local f = utils.get_filename()
   local l = utils.get_filetype()
-  local p = utils.get_project()
 
-  if f == File and l == Language and p == Project and now - LastHeartbeat < 15 then -- abort on no changes but coninue if last heartbeat is older than 15 seconds
+  if f == File and l == Language and now - HeartbeatLast < 15 then -- abort on no changes but coninue if last heartbeat is older than 15 seconds
     return
   end
-
   File = f
   Language = l
-  Project = p
-  LastHeartbeat = now
+  HeartbeatLast = now
 
   local body = {
     timestamp = utils.get_timestamp(),
     duration = 0,
     data = {
       file = File,
-      project = Project,
+      project = vim.b.project_name,
+      branch = vim.b.branch_name,
       language = Language,
     }
   }
@@ -129,6 +127,16 @@ local function create_autocommands()
     group = augroup,
     callback = AWStart
   })
+
+  -- Git
+  vim.api.nvim_create_autocmd({ "FileType", "BufEnter", "FocusGained" }, {
+    group = augroup,
+    callback = function()
+      utils.set_branch_name()
+      utils.set_project_name()
+    end
+  })
+
 end
 
 local function setup()
