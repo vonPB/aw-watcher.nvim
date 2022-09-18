@@ -20,7 +20,7 @@ use { 'vonpb/aw-watcher.nvim' }
 
 #### Setup
 
-```
+```lua
 require("aw-watcher").setup()
 ```
 The default heartbeat timeout is 8 seconds. I will add actual settings someday...
