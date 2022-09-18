@@ -69,18 +69,12 @@ local function heartbeat()
     return
   end
 
-  if not now or not HeartbeatLast or now - HeartbeatLast < 5 then
+  if not now or not HeartbeatLast or now - HeartbeatLast < 8 then
     return
   end
 
-  local f = utils.get_filename()
-  local l = utils.get_filetype()
-
-  if f == File and l == Language and now - HeartbeatLast < 15 then -- abort on no changes but coninue if last heartbeat is older than 15 seconds
-    return
-  end
-  File = f
-  Language = l
+  File = utils.get_filename()
+  Language = utils.get_filetype()
   HeartbeatLast = now
 
   local body = {

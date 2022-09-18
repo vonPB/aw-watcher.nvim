@@ -6,7 +6,6 @@ based on [ActivityWatch/aw-watcher-vim](https://github.com/ActivityWatch/aw-watc
 
 This plugin needs [`curl`](https://github.com/curl/curl) available in your PATH.
 
-
 Using [vim-plug](https://github.com/junegunn/vim-plug)
 
 ```viml
@@ -19,5 +18,22 @@ Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
 use { 'vonpb/aw-watcher.nvim' }
 ```
 
+#### Setup
+
+```
+require("aw-watcher").setup()
+```
+The default heartbeat timeout is 8 seconds. I will add actual settings someday...
+
 ### Commands
 
+```
+* AWStatus - check if connected to server
+* AWStart - manual start. Run this after being disconnected
+* Heartbeat - manually sent a heartbeat
+```
+
+
+## TODO
+
+- [ ] get git branch async
